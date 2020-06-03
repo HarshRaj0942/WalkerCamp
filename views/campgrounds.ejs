@@ -1,0 +1,13 @@
+<h2>This is campgrounds page!</h2>
+
+<% campgrounds.forEach(function(camps) { %>
+
+ <div>
+   <h4> <%= camps.name %></h4>
+
+<%#   Here, we write the <percentage operator inside the quotes since the operator only sends the string over, without the quotes%>
+   <img src = "<%= camps.image%>">
+  </div> 
+
+
+<%});%>
