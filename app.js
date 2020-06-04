@@ -24,6 +24,7 @@ app.listen(6969, function () {
 var campgroundSchema = new mongoose.Schema({
   name: String,
   image: String,
+  description: String,
 });
 
 //setup the campground Model
@@ -35,6 +36,8 @@ campgroundModel.create(
     name: "Surat",
     image:
       "https://k6u8v6y8.stackpathcdn.com/blog/wp-content/uploads/2019/04/Summer-Camping-Har-Ki-Dun-Uttarakhand.jpg",
+
+    description: "This is Surat",
   },
   function (err, campground) {
     if (err) console.log("error!");
@@ -49,6 +52,8 @@ campgroundModel.create(
     name: "Dhanbad",
     image:
       "https://k6u8v6y8.stackpathcdn.com/blog/wp-content/uploads/2019/04/Summer-Camping-Jaisalmer-Rajasthan.jpg",
+
+    description: "This is Dhanbad!",
   },
   function (err, campground) {
     if (err) console.log("error!");
@@ -57,12 +62,12 @@ campgroundModel.create(
   }
 );
 
-//landing page route
+//landing page route, this is the index route
 app.get("/", function (req, res) {
   res.render("landing.ejs");
 });
 
-//campgrounds route
+//campgrounds  route
 app.get("/campgrounds", function (req, res) {
   //get all campground from database and render it
 
@@ -86,10 +91,11 @@ app.post("/campgrounds", function (req, res) {
 
   var name = req.body.ground_Name;
   var image = req.body.ground_Image;
+  var desc = req.body.ground_desc;
 
   //make an object with the data obtained
 
-  var newCampground = { name: name, image: image };
+  var newCampground = { name: name, image: image, description: desc };
 
   //create a new campground and save to the database
 
@@ -100,6 +106,17 @@ app.post("/campgrounds", function (req, res) {
       res.redirect("/campgrounds");
     }
   });
+});
 
-  //redirect back to campgrounds page
+//creating the SHOW route for individual camps
+
+app.get("/campgrounds/:id", function (req, res) {
+  //render info about the campgrounds
+
+  campgroundModel.findById(req.params.id, function (err, foundCampground) {
+    if (err) console.log("Error displaying info");
+    else {
+      res.render("shows.ejs", { campground: foundCampground });
+    }
+  });
 });
