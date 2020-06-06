@@ -1,5 +1,9 @@
 var express = require("express");
 var mongoose = require("mongoose");
+var campgroundModel = require("./models/campgrounds.js");
+var comment = require("./models/comment.js");
+var user = require("./models/user.js");
+var seedDB = require("./seeds.js");
 
 //connect to our database
 mongoose.connect("mongodb://localhost:27017/WalkerCamp", {
@@ -13,54 +17,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 
+//generate seed data
+seedDB();
+
 //server listening at port 6969
 
 app.listen(6969, function () {
   console.log("The WalkerCamp Server listening at port 6969");
 });
-
-//schema setup
-
-var campgroundSchema = new mongoose.Schema({
-  name: String,
-  image: String,
-  description: String,
-});
-
-//setup the campground Model
-
-var campgroundModel = mongoose.model("campground", campgroundSchema);
-
-campgroundModel.create(
-  {
-    name: "Surat",
-    image:
-      "https://k6u8v6y8.stackpathcdn.com/blog/wp-content/uploads/2019/04/Summer-Camping-Har-Ki-Dun-Uttarakhand.jpg",
-
-    description: "This is Surat",
-  },
-  function (err, campground) {
-    if (err) console.log("error!");
-    else console.log("NEW CAMPGROUND!!");
-    console.log(campground);
-  }
-);
-
-//add another campground
-campgroundModel.create(
-  {
-    name: "Dhanbad",
-    image:
-      "https://k6u8v6y8.stackpathcdn.com/blog/wp-content/uploads/2019/04/Summer-Camping-Jaisalmer-Rajasthan.jpg",
-
-    description: "This is Dhanbad!",
-  },
-  function (err, campground) {
-    if (err) console.log("error!");
-    else console.log("NEW CAMPGROUND!!");
-    console.log(campground);
-  }
-);
 
 //landing page route, this is the index route
 app.get("/", function (req, res) {
@@ -82,7 +46,7 @@ app.get("/campgrounds", function (req, res) {
 
 //show the form to create new camp grounds
 app.get("/campgrounds/new", function (req, res) {
-  res.render("new.ejs");
+  res.render("./campgrounds/new.ejs");
 });
 
 //creating new campgrounds ,REST convention
@@ -103,7 +67,7 @@ app.post("/campgrounds", function (req, res) {
     if (err) console.log("Error in creating new campgrounds!");
     else {
       //redirect to campgrounds page
-      res.redirect("/campgrounds");
+      res.redirect("./campgrounds/index.ejs");
     }
   });
 });
@@ -113,10 +77,48 @@ app.post("/campgrounds", function (req, res) {
 app.get("/campgrounds/:id", function (req, res) {
   //render info about the campgrounds
 
+  //the campground object that is returned also has comments. We need to get that using .exec() Exec executes the query made by the populate function.
+  campgroundModel
+    .findById(req.params.id)
+    .populate("comments")
+    .exec(function (err, foundCampground) {
+      if (err) console.log("Error displaying info");
+      else {
+        console.log(foundCampground);
+        res.render("./campgrounds/shows.ejs", { campground: foundCampground });
+      }
+    });
+});
+
+//new comment route
+app.get("/campgrounds/:id/comments/new", function (req, res) {
   campgroundModel.findById(req.params.id, function (err, foundCampground) {
-    if (err) console.log("Error displaying info");
+    if (err) console.log("Error writing comments!");
     else {
-      res.render("shows.ejs", { campground: foundCampground });
+      res.render("./comments/new.ejs", { campground: foundCampground });
+    }
+  });
+});
+
+app.post("/campgrounds/:id/comments", function (req, res) {
+  //lookup campground using the id
+  //create new comment
+  //connect the new comment to the campground
+  //redirect to the appropriate show page
+
+  campgroundModel.findById(req.params.id, function (err, foundCampground) {
+    if (err) console.log("error");
+    else {
+      //create the comment
+      comment.create(req.body.comment, function (err, newComment) {
+        if (err) console.log("Error creating comment!");
+        foundCampground.comments.push(newComment);
+
+        //make sure to save it!
+        foundCampground.save();
+        console.log("New comment made!");
+        res.redirect("/campgrounds/" + foundCampground._id);
+      });
     }
   });
 });
