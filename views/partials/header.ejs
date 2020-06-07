@@ -27,9 +27,17 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="auth">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Sign In</a></li>
-        <li><a href="#">Sign Up</a></li>
-        <li><a href="#">Sign Out</a></li>
+
+<!-- if there is no currentUser loggedIn, show then signUp and Register. else show them SignOut-->
+       <% if(!currentUser){%>
+          <li><a href="/login">Sign In</a></li>
+          <li><a href="/register">Sign Up</a></li>
+
+       <% }   else {%>  
+          <li><a href="#">Currently Signed In as <%=currentUser.username%></a></li>
+          <li><a href="/logout">Sign Out</a></li>
+
+         <%}%> 
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
