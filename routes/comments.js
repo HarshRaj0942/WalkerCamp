@@ -30,14 +30,13 @@ router.post("/campgrounds/:id/comments", isLoggedIn, function (req, res) {
       //create the comment
       comment.create(req.body.comment, function (err, newComment) {
         if (err) console.log("Error creating comment!");
-        
-        //add user name and id to comment. Use req.useer
 
+        //add user name and id to comment. Use req.useer
 
         newComment.author.id = req.user._id;
         newComment.author.username = req.user.username;
         newComment.save();
-        
+
         foundCampground.comments.push(newComment);
 
         //make sure to save it!
@@ -45,6 +44,33 @@ router.post("/campgrounds/:id/comments", isLoggedIn, function (req, res) {
         console.log("New comment made!");
         res.redirect("/campgrounds/" + foundCampground._id);
       });
+    }
+  });
+});
+
+//edit route for comments
+
+router.get("/campgrounds/:id/comments/:comment_id/edit", function (req, res) {
+  comment.findById(req.params.comment_id, function (err, foundComment) {
+    if (err) res.redirect("back");
+    else {
+      res.render("./comments/edit.ejs", {
+        campground_id: req.params.id,
+        foundComment: foundComment,
+      });
+    }
+  });
+});
+
+//post route for comment
+router.put("/campgrounds/:id/comments/:comment_id", function (req, res) {
+  comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function (
+    err,
+    updatedComment
+  ) {
+    if (err) res.redirect("back");
+    else {
+      res.redirect("/campgrounds/" + req.params.id);
     }
   });
 });
