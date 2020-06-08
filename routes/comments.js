@@ -50,30 +50,52 @@ router.post("/campgrounds/:id/comments", isLoggedIn, function (req, res) {
 
 //edit route for comments
 
-router.get("/campgrounds/:id/comments/:comment_id/edit", function (req, res) {
-  comment.findById(req.params.comment_id, function (err, foundComment) {
-    if (err) res.redirect("back");
-    else {
-      res.render("./comments/edit.ejs", {
-        campground_id: req.params.id,
-        foundComment: foundComment,
-      });
-    }
-  });
-});
+router.get(
+  "/campgrounds/:id/comments/:comment_id/edit",
+  checkCommentOwnership,
+  function (req, res) {
+    comment.findById(req.params.comment_id, function (err, foundComment) {
+      if (err) res.redirect("back");
+      else {
+        res.render("./comments/edit.ejs", {
+          campground_id: req.params.id,
+          foundComment: foundComment,
+        });
+      }
+    });
+  }
+);
 
 //post route for comment
-router.put("/campgrounds/:id/comments/:comment_id", function (req, res) {
-  comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function (
-    err,
-    updatedComment
-  ) {
-    if (err) res.redirect("back");
-    else {
-      res.redirect("/campgrounds/" + req.params.id);
-    }
-  });
-});
+router.put(
+  "/campgrounds/:id/comments/:comment_id",
+  checkCommentOwnership,
+  function (req, res) {
+    comment.findByIdAndUpdate(
+      req.params.comment_id,
+      req.body.comment,
+      function (err, updatedComment) {
+        if (err) res.redirect("back");
+        else {
+          res.redirect("/campgrounds/" + req.params.id);
+        }
+      }
+    );
+  }
+);
+
+//destroy route for comments
+
+router.delete(
+  "/campgrounds/:id/comments/:comment_id",
+  checkCommentOwnership,
+  function (req, res) {
+    comment.findByIdAndRemove(req.params.comment_id, function (err) {
+      if (err) res.redirect("/campgrounds/" + req.params.id);
+      else res.redirect("/campgrounds/" + req.params.id);
+    });
+  }
+);
 
 //middleWare to check if user is logged in
 
@@ -86,4 +108,24 @@ function isLoggedIn(req, res, next) {
   res.redirect("/login");
 }
 
+//middleware to check comment ownership before edit/delete
+function checkCommentOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    comment.findById(req.params.comment_id, function (err, foundComment) {
+      if (err) res.redirect("back");
+      else {
+        //does the user own the comment
+
+        //author.id is a mongoose object, user._id is a string, cant compare with == OR ===
+        if (foundComment.author.id.equals(req.user._id)) next();
+        else {
+          res.redirect("back");
+        }
+      }
+    });
+  } else {
+    //send user back to where they came from
+    res.redirect("back");
+  }
+}
 module.exports = router;
