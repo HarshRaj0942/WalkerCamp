@@ -25,7 +25,11 @@
                 <h4 ><a> <%=campground.name%></a>
               </div> 
 
-              <p> <%=campground.description%>
+              <p> <%=campground.description%></p>
+              <p>
+              <em>Submitted By <%= campground.author.username%></em>
+              </p>
+              <a class="btn btn-warning" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
         </div> 
 
 
@@ -39,7 +43,7 @@
              <% campground.comments.forEach(function(comment) { %>
             
               <div class="col-md-12">
-                      <strong> <%=comment.author%></strong>  
+                      <strong> <%=comment.author.username%></strong>  
                       <span class="pull-right">10 days ago</span>                  
                       <p><%=comment.text%></p>
                     

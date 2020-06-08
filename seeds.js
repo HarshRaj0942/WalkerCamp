@@ -31,12 +31,11 @@ function seedDB() {
     }
     console.log("removed campgrounds!");
   });
-  Comment.remove({}, function (err) {
-    if (err) {
-      console.log(err);
-    }
-    console.log("removed comments!");
-  });
+  // Comment.remove({}, function (err) {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  //   console.log("removed comments!");
   //add a few campgrounds
   data.forEach(function (seed) {
     Campground.create(seed, function (err, campground) {
