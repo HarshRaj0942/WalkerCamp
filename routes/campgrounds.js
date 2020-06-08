@@ -77,18 +77,21 @@ router.get("/campgrounds/:id", function (req, res) {
 
 //edit campground route
 
-router.get("/campgrounds/:id/edit", function (req, res) {
+router.get("/campgrounds/:id/edit", checkCampgroundOwnership, function (
+  req,
+  res
+) {
+  //if user is logged In or not
   campgroundModel.findById(req.params.id, function (err, foundCampground) {
-    if (err) console.redirect("/campgrounds");
-    else {
-      res.render("./campgrounds/edit.ejs", { campground: foundCampground });
-    }
+    //if we got to this point, there is no problem anyway
+    res.render("./campgrounds/edit.ejs", { campground: foundCampground });
   });
+  //if yes, is he the author of the campground
 });
 
 //post route
 
-router.put("/campgrounds/:id", function (req, res) {
+router.put("/campgrounds/:id", checkCampgroundOwnership, function (req, res) {
   campgroundModel.findByIdAndUpdate(
     req.params.id,
     req.body.campground,
@@ -99,6 +102,20 @@ router.put("/campgrounds/:id", function (req, res) {
       }
     }
   );
+});
+
+//destroy campground route
+//remember, for deleting, we need to submit a form
+router.delete("/campgrounds/:id", checkCampgroundOwnership, function (
+  req,
+  res
+) {
+  campgroundModel.findByIdAndRemove(req.params.id, function (err) {
+    if (err) res.redirect("/campgrounds");
+    else {
+      res.redirect("/campgrounds");
+    }
+  });
 });
 
 //middleWare to check if user is logged in
@@ -112,4 +129,26 @@ function isLoggedIn(req, res, next) {
   res.redirect("/login");
 }
 
+//middleware
+//check ownership of campground
+
+function checkCampgroundOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    campgroundModel.findById(req.params.id, function (err, foundCampground) {
+      if (err) res.redirect("back");
+      else {
+        //does the user own the campground
+
+        //author.id is a mongoose object, user._id is a string, cant compare with == OR ===
+        if (foundCampground.author.id.equals(req.user._id)) next();
+        else {
+          res.redirect("back");
+        }
+      }
+    });
+  } else {
+    //send user back to where they came from
+    res.redirect("back");
+  }
+}
 module.exports = router;
