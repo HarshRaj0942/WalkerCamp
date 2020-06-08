@@ -75,6 +75,32 @@ router.get("/campgrounds/:id", function (req, res) {
     });
 });
 
+//edit campground route
+
+router.get("/campgrounds/:id/edit", function (req, res) {
+  campgroundModel.findById(req.params.id, function (err, foundCampground) {
+    if (err) console.redirect("/campgrounds");
+    else {
+      res.render("./campgrounds/edit.ejs", { campground: foundCampground });
+    }
+  });
+});
+
+//post route
+
+router.put("/campgrounds/:id", function (req, res) {
+  campgroundModel.findByIdAndUpdate(
+    req.params.id,
+    req.body.campground,
+    function (err, updatedCampground) {
+      if (err) res.redirect("/campgrounds");
+      else {
+        res.redirect("/campgrounds/" + req.params.id);
+      }
+    }
+  );
+});
+
 //middleWare to check if user is logged in
 
 //middleWare usually has three params, req,res and next
