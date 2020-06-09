@@ -10,7 +10,10 @@ var middleware = require("../middleware/index.js");
 //when /secret is called, first isLoggedIn is run
 //the next refers here to our callback
 //if the user is loggedIn, next ,i.e. callback is run
-router.get("/campgrounds/:id/comments/new", middleware.isLoggedIn, function (req, res) {
+router.get("/campgrounds/:id/comments/new", middleware.isLoggedIn, function (
+  req,
+  res
+) {
   campgroundModel.findById(req.params.id, function (err, foundCampground) {
     if (err) console.log("Error writing comments!");
     else {
@@ -19,7 +22,10 @@ router.get("/campgrounds/:id/comments/new", middleware.isLoggedIn, function (req
   });
 });
 
-router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (req, res) {
+router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (
+  req,
+  res
+) {
   //lookup campground using the id
   //create new comment
   //connect the new comment to the campground
@@ -30,8 +36,10 @@ router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (req, r
     else {
       //create the comment
       comment.create(req.body.comment, function (err, newComment) {
-        if (err) console.log("Error creating comment!");
-
+        if (err) {
+          req.flash("error", "Could not add comment!");
+          res.redirect("back");
+        }
         //add user name and id to comment. Use req.useer
 
         newComment.author.id = req.user._id;
@@ -43,6 +51,7 @@ router.post("/campgrounds/:id/comments", middleware.isLoggedIn, function (req, r
         //make sure to save it!
         foundCampground.save();
         console.log("New comment made!");
+        req.flash("success", "Successfully added comment!");
         res.redirect("/campgrounds/" + foundCampground._id);
       });
     }
@@ -93,11 +102,12 @@ router.delete(
   function (req, res) {
     comment.findByIdAndRemove(req.params.comment_id, function (err) {
       if (err) res.redirect("/campgrounds/" + req.params.id);
-      else res.redirect("/campgrounds/" + req.params.id);
+      else {
+        req.flash("success", "Comment deleted!");
+        res.redirect("/campgrounds/" + req.params.id);
+      }
     });
   }
 );
-
-
 
 module.exports = router;

@@ -32,6 +32,7 @@ router.post("/campgrounds", middleware.isLoggedIn, function (req, res) {
   //get data from form and add to Walker camp
 
   var name = req.body.ground_Name;
+  var price = req.body.ground_price;
   var image = req.body.ground_Image;
   var desc = req.body.ground_desc;
 
@@ -43,6 +44,7 @@ router.post("/campgrounds", middleware.isLoggedIn, function (req, res) {
   };
   var newCampground = {
     name: name,
+    price: price,
     image: image,
     description: desc,
     author: author,
@@ -70,6 +72,11 @@ router.get("/campgrounds/:id", function (req, res) {
     .findById(req.params.id)
     .populate("comments")
     .exec(function (err, foundCampground) {
+      // Added this block, to check if foundCampground exists, and if it doesn't to throw an error via connect-flash and send us back to the homepage
+      if (!foundCampground) {
+        req.flash("error", "Item not found.");
+        return res.redirect("back");
+      }
       if (err) console.log("Error displaying info");
       else {
         console.log(foundCampground);

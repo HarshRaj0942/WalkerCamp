@@ -4,8 +4,9 @@ var methodOverride = require("method-override");
 var passport = require("passport");
 var user = require("./models/user.js");
 var localStrategy = require("passport-local");
+var flash = require("connect-flash");
 
-var seedDB = require("./seeds.js");
+// var seedDB = require("./seeds.js");
 
 var commentRoutes = require("./routes/comments");
 var campgroundRoutes = require("./routes/campgrounds");
@@ -24,6 +25,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
+
+//use flash() before passport configuration
+app.use(flash());
 
 //generate seed data
 //seedDB();
@@ -52,6 +56,8 @@ passport.deserializeUser(user.deserializeUser());
 //middleware to send user data to all the routes
 app.use(function (req, res, next) {
   res.locals.currentUser = req.user;
+  res.locals.error = req.flash("error");
+  res.locals.success = req.flash("success");
   next();
 });
 

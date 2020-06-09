@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var passport = require("passport");
 var user = require("../models/user");
+var middleware = require("../middleware/index.js");
 
 //this is the all purpose route not related to any model
 //landing page route, this is the index route
@@ -28,8 +29,8 @@ router.post("/register", function (req, res) {
     newUser
   ) {
     if (err) {
-      console.log(err);
-      res.redirect("/");
+      req.flash("error", err.message + "!");
+      return res.redirect("/register");
     }
 
     //if no error, then  authenticate
@@ -39,6 +40,7 @@ router.post("/register", function (req, res) {
 
     //NOTE:- salt in our databse helps to unhash the hashed password
     passport.authenticate("local")(req, res, function () {
+      req.flash("success", "Welcome to WalkerCamp " + newUser.username + "!");
       res.redirect("/campgrounds");
     });
   });
@@ -61,7 +63,10 @@ router.post(
     successRedirect: "/campgrounds",
     failureRedirect: "/login",
   }),
-  function (req, res) {}
+  function (req, res) {
+    //   req.flash("success","Welcome back to WalkerCamp");
+    //   res.redirect
+  }
 );
 
 //logout route
@@ -69,18 +74,8 @@ router.post(
 router.get("/logout", function (req, res) {
   //passport destroys user data from session
   req.logout();
+  req.flash("success", "Logged You Out!");
   res.redirect("/campgrounds");
 });
-
-//middleWare to check if user is logged in
-
-//middleWare usually has three params, req,res and next
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-
-  res.redirect("/login");
-}
 
 module.exports = router;
