@@ -70,8 +70,8 @@ app.use(indexRoutes);
 app.use(commentRoutes);
 app.use(campgroundRoutes);
 
-//server listening at port 6969
+// //server listening at port 6969
 
-app.listen(6969, function () {
-  console.log("The WalkerCamp Server listening at port 6969");
-});
+// app.listen(6969, function () {
+//   console.log("The WalkerCamp Server listening at port 6969");
+// });
