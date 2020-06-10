@@ -1,16 +1,28 @@
 <%- include ("partials/header") %>
+<div class="container">
+ 
+ <div class="row " style="margin-top:100px;">
+  <h1 style="text-align:center"> Sign In </h1>
 
+   <div style="margin:30px auto;" >
 
-<!-- name the POST route same as GET route as per convention-->
-<form action="/login" method="POST">
-  <input type="text" name="username" placeholder="Enter username">
-  <input type="password" name="password" placeholder="Enter password">
-  <button>Log In</button>
+    <form action="/login" method="POST">
+       
+      <div class="form-group" style="display:flex">
+       <input style="margin:0 auto" type="text" name="username" placeholder="Enter username">
+      </div>
 
-</form>
+      <div class="form-group" style="display:flex">
+       <input style="margin:0 auto" type="password" name="password" placeholder="Enter password">
+      </div>
 
-  <a href="/register">Sign Up</a>
-    <a href="/login">Log In</a>
-    <a href="/logout">Log out</a>
+      <div class="form-group" style="display:flex;">
+       <button style="margin:0 auto" class ="btn btn-md btn-primary " type="submit">Sign In</button>
+      </div>
 
-<%- include ("partials/footer") %>
+    </form>
+
+   </div>  
+  <div> 
+</div>
+  <%- include ("partials/footer") %>
