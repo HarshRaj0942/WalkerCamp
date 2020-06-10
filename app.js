@@ -13,10 +13,10 @@ var campgroundRoutes = require("./routes/campgrounds");
 var indexRoutes = require("./routes/index");
 
 //connect to our database
-mongoose.connect("mongodb://localhost:27017/WalkerCamp", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+
+mongoose.connect(
+  "mongodb+srv://hr1102:bits_pilani0942@cluster0-jk0pk.mongodb.net/WalkerCamp?retryWrites=true&w=majority"
+);
 var app = express();
 
 var bodyParser = require("body-parser");
