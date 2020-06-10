@@ -13,14 +13,18 @@ var campgroundRoutes = require("./routes/campgrounds");
 var indexRoutes = require("./routes/index");
 
 //connect to our database
+mongoose.connect("mongodb://localhost:27017/WalkerCamp", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-mongoose.connect(
-  "mongodb+srv://hr1102:bits_pilani0942@cluster0-jk0pk.mongodb.net/WalkerCamp?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+// mongoose.connect(
+//   "mongodb+srv://hr1102:bits_pilani0942@cluster0-jk0pk.mongodb.net/WalkerCamp?retryWrites=true&w=majority",
+//   {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   }
+// );
 var app = express();
 
 var bodyParser = require("body-parser");
@@ -72,6 +76,6 @@ app.use(campgroundRoutes);
 
 // //server listening at port 6969
 
-// app.listen(6969, function () {
-//   console.log("The WalkerCamp Server listening at port 6969");
-// });
+app.listen(6969, function () {
+  console.log("The WalkerCamp Server listening at port 6969");
+});
