@@ -15,7 +15,11 @@ var indexRoutes = require("./routes/index");
 //connect to our database
 
 mongoose.connect(
-  "mongodb+srv://hr1102:bits_pilani0942@cluster0-jk0pk.mongodb.net/WalkerCamp?retryWrites=true&w=majority"
+  "mongodb+srv://hr1102:bits_pilani0942@cluster0-jk0pk.mongodb.net/WalkerCamp?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
 );
 var app = express();
 
