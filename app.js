@@ -76,6 +76,8 @@ app.use(campgroundRoutes);
 
 // //server listening at port 6969
 
-app.listen(6969, function () {
-  console.log("The WalkerCamp Server listening at port 6969");
-});
+// app.listen(6969, function () {
+//   console.log("The WalkerCamp Server listening at port 6969");
+// });
+
+app.listen(process.env.PORT || 3000, () => console.log("Server is running..."));
